@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!--id是唯一的,class是类的位置-->
+    <!--测试bean的定义继承-->
+    <bean id="helloWorld" class="spring.tutorialspoint.HelloWorld">
+        <property name="message1" value="Hello World!"/>
+        <property name="message2" value="Hello Second World!"/>
+    </bean>
+
+    <bean id="helloIndia" class="spring.tutorialspoint.HelloIndia" parent="helloWorld">
+        <property name="message1" value="Hello India!"/>
+        <property name="message3" value="Namaste India!"/>
+    </bean>
+
+    <!-- Definition for textEditor bean -->
+    <bean id="textEditor" class="spring.tutorialspoint.TextEditor">
+        <constructor-arg ref="spellChecker"/>
+    </bean>
+
+    <!-- Definition for spellChecker bean -->
+    <bean id="spellChecker" class="spring.tutorialspoint.SpellChecker">
+    </bean>
+
+
+</beans>
