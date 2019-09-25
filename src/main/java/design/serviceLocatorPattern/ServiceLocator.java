@@ -1,4 +1,4 @@
-package serviceLocatorPattern;
+package design.serviceLocatorPattern;
 
 /**
  * 创建服务定位器。

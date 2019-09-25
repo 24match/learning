@@ -1,4 +1,4 @@
-package design;
+package design.factory;
 
 /**
  * 工厂模式

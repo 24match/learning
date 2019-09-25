@@ -1,4 +1,4 @@
-package serviceLocatorPattern;
+package design.serviceLocatorPattern;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * 服务定位器模式
  * 创建缓存 Cache。
+ * 传输对象模式
  */
 public class Cache {
 
