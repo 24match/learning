@@ -1,4 +1,4 @@
-package design.TransferObjectPattern;
+package design.transferObjectPattern;
 
 /**
  * 使用 StudentBO 来演示传输对象设计模式。

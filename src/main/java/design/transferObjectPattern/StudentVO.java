@@ -1,4 +1,4 @@
-package design.TransferObjectPattern;
+package design.transferObjectPattern;
 
 /**
  * 传输对象模式

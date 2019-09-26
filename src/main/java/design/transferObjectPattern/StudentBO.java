@@ -1,4 +1,4 @@
-package design.TransferObjectPattern;
+package design.transferObjectPattern;
 
 import java.util.ArrayList;
 import java.util.List;
