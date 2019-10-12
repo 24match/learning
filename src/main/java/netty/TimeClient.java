@@ -57,7 +57,7 @@ public class TimeClient {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                /**优雅退出，释放NIO线程组*/
+                /**释放NIO线程组*/
                 group.shutdownGracefully();
             }
         }
