@@ -13,7 +13,7 @@ import java.util.function.UnaryOperator;
  * @Date 2019/10/14 11:48
  * @Version
  */
-public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAccess ,Cloneable , Serializable {
+public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAccess,Cloneable , Serializable {
     private static final long serialVersionUID = -9189397985924370353L;
     //默认容量
     private static final int DEFAULT_CAPACITY = 10;
@@ -21,9 +21,12 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
     private static final Object[] EMPTY_ELEMENTDATA = new Object[0];
     //默认容量 空的数据
     private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = new Object[0];
-    //元素数据
+    //为了在一个特定对象的一个域上关闭serialization，可以在这个域前加上关键字transient。
+    //transient是Java语言的关键字，用来表示一个域不是该对象串行化的一部分。
+    // 当一个对象被串行化的时候，transient型变量的值不包括在串行化的表示中，然而非transient型的变量是被包括进去的。
+    //elementData存储ArrayList内的元素
     transient Object[] elementData;
-    //声明size , 用于表示list的大小
+    //size表示它包含的元素的数量
     private int size;
     //数组的最大容量
     private static final int MAX_ARRAY_SIZE = 2147483639;
@@ -242,7 +245,7 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
             var3 = var1;
         }
         // 判断是否大于最大内存
-        if (var3 - 2147483639 > 0) {
+        if (var3 - MAX_ARRAY_SIZE > 0) {
             var3 = hugeCapacity(var1);
         }
 
@@ -258,7 +261,7 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
         if (var0 < 0) {
             throw new OutOfMemoryError();
         } else {
-            return var0 > 2147483639 ? 2147483647 : 2147483639;
+            return var0 > MAX_ARRAY_SIZE ? 2147483647 : MAX_ARRAY_SIZE;
         }
     }
 
@@ -293,14 +296,26 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
         return (E) var3;
     }
 
-    @Override
-    public void forEach(Consumer consumer) {
-
-    }
+//    @Override
+//    public void forEach(Consumer<? super E> var1) {
+//        Objects.requireNonNull(var1);
+//        int var2 = this.modCount;
+//        Object[] var3 = this.elementData;
+//        int var4 = this.size;
+//
+//        for(int var5 = 0; this.modCount == var2 && var5 < var4 ; ++var5) {
+//            var1.accept(var3[var5]);
+//            !!!!!!!!!!!!!!!!!!!!
+//        }
+//
+//        if (this.modCount != var2) {
+//            throw new ConcurrentModificationException();
+//        }
+//    }
 
     @Override
     public Spliterator<E> spliterator() {
-        return null;
+        return new MyArrayList.ArrayListSpliterator(this, 0, -1, 0);
     }
 
     @Override
@@ -485,8 +500,6 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
             return this.size;
         }
 
-
-
         /**
          * 检查是否下标越界
          * @param var1
@@ -514,5 +527,73 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
         }
     }
 
+    public class ArrayListSpliterator implements Spliterator<E> {
+        private final MyArrayList<E> list;
+        private int index;
+        private int fence;
+        private int expectedModCount;
+
+        ArrayListSpliterator(MyArrayList<E> var1, int var2, int var3, int var4) {
+            this.list = var1;
+            this.index = var2;
+            this.fence = var3;
+            this.expectedModCount = var4;
+        }
+
+        private int getFence() {
+            int var1;
+            if ((var1 = this.fence) < 0) {
+                MyArrayList var2;
+                if ((var2 = this.list) == null) {
+                    var1 = this.fence = 0;
+                } else {
+                    this.expectedModCount = var2.modCount;
+                    var1 = this.fence = 0;
+                }
+            }
+
+            return var1;
+        }
+
+        @Override
+        public boolean tryAdvance(Consumer<? super E> consumer) {
+            return false;
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super E> consumer) {
+
+        }
+
+        @Override
+        public Spliterator<E> trySplit() {
+            return null;
+        }
+
+        @Override
+        public long estimateSize() {
+            return 0;
+        }
+
+        @Override
+        public long getExactSizeIfKnown() {
+            return 0;
+        }
+
+        @Override
+        public int characteristics() {
+            return 0;
+        }
+
+        @Override
+        public boolean hasCharacteristics(int i) {
+            return false;
+        }
+
+        @Override
+        public Comparator<? super E> getComparator() {
+            return null;
+        }
+    }
 }
 
