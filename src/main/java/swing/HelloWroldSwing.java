@@ -29,11 +29,7 @@ public class HelloWroldSwing {
 
     public static void main(String[] args) {
         // 显示应用 GUI
-        invokeLater(new Runnable() {
-            public void run() {
-                createShowGUI();
-            }
-        });
+        invokeLater(() -> createShowGUI());
     }
 
 }

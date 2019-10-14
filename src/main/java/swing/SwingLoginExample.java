@@ -7,7 +7,7 @@ import javax.swing.*;
  * @Date 2019/10/11 10:04
  * @Version
  */
-public class SwingLoginExamplae {
+public class SwingLoginExample {
 
     public static void main(String[] args) {
         // 创建 JFrame 实例
