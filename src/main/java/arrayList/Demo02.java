@@ -7,13 +7,10 @@ package arrayList;
  */
 public class Demo02 {
     public static void main(String[] args) {
-        MyArrayList<Integer> list = new MyArrayList();
-        list.add(1);
-        list.add(3);
+        MyArrayList list = new MyArrayList();
+        list.add("1");
+        list.add("3");
         System.out.println(list);
 
-        for (Integer a: list) {
-            System.out.println(a);
-        }
     }
 }

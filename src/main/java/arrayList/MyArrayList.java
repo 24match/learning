@@ -220,7 +220,7 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
      */
     private void ensureCapacityInternal(int var1) {
         //调用这个方法的时候统计数组的容积 , 获取最后一个值的下标
-        this.ensureExplicitCapacity(calculateCapacity(this.elementData , var1));
+        this.ensureExplicitCapacity(calculateCapacity(this.elementData, var1));
     }
 
     /**
@@ -289,6 +289,12 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
         return (E) this.elementData;
     }
 
+    /**
+     * 用指定的元素替换此列表中指定位置的元素
+     * @param var1
+     * @param var2
+     * @return
+     */
     public E set(int var1 , E var2) {
         this.rangeCheck(var1);
         Object var3 = this.elementData(var1);
@@ -296,29 +302,29 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
         return (E) var3;
     }
 
-//    @Override
-//    public void forEach(Consumer<? super E> var1) {
-//        Objects.requireNonNull(var1);
-//        int var2 = this.modCount;
-//        Object[] var3 = this.elementData;
-//        int var4 = this.size;
-//
-//        for(int var5 = 0; this.modCount == var2 && var5 < var4 ; ++var5) {
-//            var1.accept(var3[var5]);
-//            !!!!!!!!!!!!!!!!!!!!
-//        }
-//
-//        if (this.modCount != var2) {
-//            throw new ConcurrentModificationException();
-//        }
-//    }
+    public void forEach(Consumer<? super E> var1) {
+        Objects.requireNonNull(var1);
+        int var2 = this.modCount;
+        Object[] var3 = this.elementData;
+        int var4 = this.size;
 
-    @Override
+        for(int var5 = 0; this.modCount == var2 && var5 < var4; ++var5) {
+            var1.accept(var3[var5]);
+        }
+
+        if (this.modCount != var2) {
+            throw new ConcurrentModificationException();
+        }
+    }
+
     public Spliterator<E> spliterator() {
         return new MyArrayList.ArrayListSpliterator(this, 0, -1, 0);
     }
 
-    @Override
+    /**
+     * 长度
+     * @return
+     */
     public int size() {
         return this.size;
     }
@@ -367,6 +373,8 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
     }
 
     /**
+     * Returns the index of the last occurrence of the specified element in this list, or -1 if this list does not contain the element.
+     * More formally, returns the highest index i such that (o==null ? get(i)==null : o.equals(get(i))), or -1 if there is no such index.
      * 返回最后一次在数组（字符串）出现的位置,如果字符串中没有这样的字符则返回-1
      * @param var1
      * @return
@@ -406,6 +414,25 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
     }
 
     /**
+     * Removes the element at the specified position in this list.
+     * Shifts any subsequent elements to the left (subtracts one from their indices).
+     * @param var1
+     * @return
+     */
+    public E remove(int var1) {
+        this.rangeCheck(var1);
+        ++this.modCount;
+        Object var2 = this.elementData(var1);
+        int var3 = this.size - var1 - 1;
+        if (var3 > 0) {
+            System.arraycopy(this.elementData, var1 + 1 , this.elementData , var1 , var3);
+        }
+
+        this.elementData[--this.size] = null;
+        return (E)var2;
+    }
+
+    /**
      * 调用Arrays.copyOf将返回一个数组，数组内容是size个elementData的元素，即拷贝elementData从0至size-1位置的元素到新数组并返回。
      */
     public Object[] toArray() {
@@ -439,19 +466,92 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
         return (E) this.elementData[var1];
     }
 
-    @Override
-    public boolean removeIf(Predicate predicate) {
-        return false;
+    public boolean removeIf(Predicate<? super E> var1) {
+        Objects.requireNonNull(var1);
+        int var2 = 0;
+        BitSet var3 = new BitSet(this.size);
+        int var4 = this.modCount;
+        int var5 = this.size;
+
+        for (int var6 = 0;this.modCount == var4 && var6 < var5 ; ++var6) {
+            Object var7 = this.elementData[var6];
+            if (var1.test(var7)) {
+                var3.set(var6);
+                ++var2;
+            }
+        }
+
+        if (this.modCount != var4) {
+            throw new ConcurrentModificationException();
+        } else {
+            boolean var10 = var2 > 0;
+            if (var10) {
+                int var11 = var5 - var2;
+                int var8 = 0;
+
+                for (int var9 = 0; var8 < var5 && var9 < var11; ++var9) {
+                    var8 = var3.nextClearBit(var8);
+                    this.elementData[var9] = this.elementData[var8];
+                    ++var8;
+                }
+
+                for (var8 = var11; var8 < var5; ++var8) {
+                    this.elementData[var8] = null;
+                }
+
+                this.size = var11;
+                if (this.modCount != var4) {
+                    throw new ConcurrentModificationException();
+                }
+
+                ++this.modCount;
+            }
+            return var10;
+        }
     }
 
-    @Override
-    public void replaceAll(UnaryOperator unaryOperator) {
+    public void replaceAll(UnaryOperator<E> var1) {
+        Objects.requireNonNull(var1);
+        int var2 = this.modCount;
+        int var3 = this.size;
 
+        for (int var4 = 0; this.modCount == var2 && var4 < var3; ++var4) {
+            this.elementData[var4] = var1.apply((E) this.elementData[var4]);
+        }
+
+        if (this.modCount != var2) {
+            throw new ConcurrentModificationException();
+        } else {
+            ++this.modCount;
+        }
     }
 
-    @Override
-    public void sort(Comparator comparator) {
+    /**
+     * 排序
+     * @param var1
+     */
+    public void sort(Comparator<? super E> var1) {
+        int var2 = this.modCount;
+        Arrays.sort((E[])this.elementData, 0, this.size , var1);
+        if (this.modCount != var2) {
+            throw new ConcurrentModificationException();
+        } else {
+            ++this.modCount;
+        }
+    }
 
+    /**
+     * Removes all of the elements from this list. The list will be empty after this call returns.
+     * 删掉数组中所有的元素
+     */
+    public void clear() {
+        ++this.modCount;
+
+        for (int var1 = 0; var1 < this.size; ++var1) {
+            this.elementData[var1] = null;
+        }
+
+        this.size = 0;
     }
 
 

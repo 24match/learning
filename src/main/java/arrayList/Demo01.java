@@ -29,6 +29,11 @@ public class Demo01 {
         list.clear();
         System.out.println("清空后的数组:" + list);
 
+        MyArrayList list1 = new MyArrayList();
+        list1.add("1");
+        list1.add("2");
+        System.out.println(list1);
+
     }
 
 
