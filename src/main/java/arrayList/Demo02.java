@@ -12,5 +12,9 @@ public class Demo02 {
         list.add("3");
         System.out.println(list);
 
+        MyArrayList<Integer> list1 = new MyArrayList<>();
+        list1.add(1);
+        System.out.println(list1.toString());
+
     }
 }

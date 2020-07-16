@@ -74,6 +74,13 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
     }
 
     /**
+     * 调用Arrays.copyOf将返回一个数组，数组内容是size个elementData的元素，即拷贝elementData从0至size-1位置的元素到新数组并返回。
+     */
+    public Object[] toArray() {
+        return Arrays.copyOf(this.elementData ,this.size);
+    }
+
+    /**
      * Appends the specified element to the end of this list.
      * 是否 将指定的元素追加到此列表的末尾
      * @param var1 下标
@@ -302,20 +309,20 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
         return (E) var3;
     }
 
-    public void forEach(Consumer<? super E> var1) {
-        Objects.requireNonNull(var1);
-        int var2 = this.modCount;
-        Object[] var3 = this.elementData;
-        int var4 = this.size;
-
-        for(int var5 = 0; this.modCount == var2 && var5 < var4; ++var5) {
-            var1.accept(var3[var5]);
-        }
-
-        if (this.modCount != var2) {
-            throw new ConcurrentModificationException();
-        }
-    }
+//    public void forEach(Consumer<? super E> var1) {
+//        Objects.requireNonNull(var1);
+//        int var2 = this.modCount;
+//        Object[] var3 = this.elementData;
+//        int var4 = this.size;
+//
+//        for(int var5 = 0; this.modCount == var2 && var5 < var4; ++var5) {
+//            var1.accept(var3[var5]);
+//        }
+//
+//        if (this.modCount != var2) {
+//            throw new ConcurrentModificationException();
+//        }
+//    }
 
     public Spliterator<E> spliterator() {
         return new MyArrayList.ArrayListSpliterator(this, 0, -1, 0);
@@ -432,11 +439,34 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
         return (E)var2;
     }
 
-    /**
-     * 调用Arrays.copyOf将返回一个数组，数组内容是size个elementData的元素，即拷贝elementData从0至size-1位置的元素到新数组并返回。
-     */
-    public Object[] toArray() {
-        return Arrays.copyOf(this.elementData ,this.size);
+    public boolean remove(Object var1) {
+        int var2;
+        if (var1 == null) {
+            for (var2 = 0; var2 < this.size ; ++var2) {
+                if (this.elementData[var2] == null) {
+                    this.fastRemove(var2);
+                    return true;
+                }
+            }
+        } else {
+            for (var2 = 0; var2 < this.size; ++ var2) {
+                if (var1.equals(this.elementData[var2])) {
+                    this.fastRemove(var2);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void fastRemove(int var1) {
+        ++this.modCount;
+        int var2 = this.size - var1 -1;
+        if (var2 > 0) {
+            System.arraycopy(this.elementData, var1 + 1,this.elementData , var1 ,var2);
+        }
+
+        this.elementData[--this.size] = null;
     }
 
     /**
@@ -475,10 +505,10 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
 
         for (int var6 = 0;this.modCount == var4 && var6 < var5 ; ++var6) {
             Object var7 = this.elementData[var6];
-            if (var1.test(var7)) {
-                var3.set(var6);
-                ++var2;
-            }
+//            if (var1.test(var7)) {
+//                var3.set(var6);
+//                ++var2;
+//            }
         }
 
         if (this.modCount != var4) {
@@ -587,14 +617,24 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
          * @return
          */
         public E set(int var1, E var2) {
-            return null;
+            this.rangeCheck(var1);
+            this.checkForComodification();
+            Object var3 = MyArrayList.this.elementData(this.offset + var1);
+            MyArrayList.this.elementData[this.offset + var1] = var2;
+            return (E) var3;
         }
 
         @Override
-        public E get(int i) {
-            return null;
+        public E get(int var1) {
+            this.rangeCheck(var1);
+            this.checkForComodification();
+            return MyArrayList.this.elementData(this.offset + var1);
         }
 
+        /**
+         * 返回数组的大小
+         * @return
+         */
         @Override
         public int size() {
             return this.size;
@@ -623,16 +663,29 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
          * 检查是否发生并发安全问题
          */
         private void checkForComodification() {
-
+            if (MyArrayList.this.modCount != this.modCount) {
+                throw new ConcurrentModificationException();
+            }
         }
     }
 
-    public class ArrayListSpliterator implements Spliterator<E> {
+    public class ArrayListSpliterator<E> implements Spliterator<E> {
+        //存放ArrayList对象
         private final MyArrayList<E> list;
+        //当前位置(包含当前的位置),advance/split操作时修改
         private int index;
+        //结束位置(不包含结束结束的当前位置)
         private int fence;
+        //用于存放list的modCount(修改次数)
         private int expectedModCount;
 
+        /**
+         *
+         * @param var1 ArrayList对象
+         * @param var2 index 下标开始的位置
+         * @param var3 fence 下标结束的位置,不包括当前下标
+         * @param var4 记录list的修改次数
+         */
         ArrayListSpliterator(MyArrayList<E> var1, int var2, int var3, int var4) {
             this.list = var1;
             this.index = var2;
@@ -640,13 +693,20 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
             this.expectedModCount = var4;
         }
 
+        /**
+         * 获取结束位置
+         * @return
+         */
         private int getFence() {
+            //var1 用来记录下标结束的位置
             int var1;
             if ((var1 = this.fence) < 0) {
                 MyArrayList var2;
+                //如果数组为空 ,则最后一个下标也是0
                 if ((var2 = this.list) == null) {
                     var1 = this.fence = 0;
                 } else {
+                    //如果数组不为空,
                     this.expectedModCount = var2.modCount;
                     var1 = this.fence = 0;
                 }
@@ -655,16 +715,84 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
             return var1;
         }
 
-        @Override
-        public boolean tryAdvance(Consumer<? super E> consumer) {
-            return false;
+//        public MyArrayList.ArrayListSpliterator<E> trySplit() {
+//            int var1 = this.getFence();
+//            int var2 = this.index;
+//            int var3 = var2 + var1 >>> 1;
+//            return var2 >= var3 ? null : new MyArrayList.ArrayListSpliterator(this.list, var2, this.index = var3, this.expectedModCount);
+//        }
+
+        /**
+         * 返回ture时表示还有元素尚未处理
+         * 返回false表示已经没有待处理元素
+         * @param var1
+         * @return
+         */
+        public boolean tryAdvance(Consumer<? super E> var1) {
+            if (var1 == null) {
+                throw new NullPointerException();
+            } else {
+                int var2 = this.getFence();
+                int var3 = this.index;
+                if (var3 < var2) {
+                    this.index = var3 + 1;
+                    Object var4 = this.list.elementData[var3];
+//                    var1.accept(var4);
+                    if (this.list.modCount != this.expectedModCount) {
+                        throw new ConcurrentModificationException();
+                    } else {
+                        return true;
+                    }
+                } else {
+                    return false;
+                }
+            }
         }
 
+        /**
+         * 顺序遍历所有剩下的元素
+         * @param var1
+         */
         @Override
-        public void forEachRemaining(Consumer<? super E> consumer) {
+        public void forEachRemaining(Consumer<? super E> var1) {
+            if (var1 == null) {
+                throw  new NullPointerException();
+            } else {
+                MyArrayList var5;
+                Object[] var6;
+                if ((var5 = this.list) != null && (var6 = var5.elementData) !=null) {
+                    int var3;
+                    int var4;
+                    if ((var3 = this.fence) < 0) {
+                        var4 = var5.modCount;
+                        var3 = var5.size;
+                    } else {
+                        var4 = this.expectedModCount;
+                    }
 
+                    int var2;
+                    if ((var2 = this.index) >= 0 && (this.index = var3) <= var6.length) {
+                        while (var2 < var3) {
+                            Object var7 = var6[var2];
+//                            var1.accept(var7);
+                            ++var2;
+                        }
+
+                        if (var5.modCount == var4) {
+                            return;
+                        }
+                    }
+                }
+
+                throw new ConcurrentModificationException();
+            }
         }
 
+        /**
+         * 分割list,返回一个新分割出的Spliterator实例
+         *
+         * @return
+         */
         @Override
         public Spliterator<E> trySplit() {
             return null;
@@ -672,28 +800,14 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
 
         @Override
         public long estimateSize() {
-            return 0;
-        }
-
-        @Override
-        public long getExactSizeIfKnown() {
-            return 0;
+            return this.getFence() - this.index;
         }
 
         @Override
         public int characteristics() {
-            return 0;
+            return 16464;
         }
 
-        @Override
-        public boolean hasCharacteristics(int i) {
-            return false;
-        }
-
-        @Override
-        public Comparator<? super E> getComparator() {
-            return null;
-        }
     }
 }
 
