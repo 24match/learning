@@ -9,5 +9,4 @@ out
 gen
 
 src/main/java/map/
-src/main/resources/
 target/
