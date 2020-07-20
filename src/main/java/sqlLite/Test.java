@@ -1,4 +1,4 @@
-package SqlLite;
+package sqlLite;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

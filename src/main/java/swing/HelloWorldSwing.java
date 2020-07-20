@@ -9,7 +9,7 @@ import static javax.swing.SwingUtilities.invokeLater;
  * @Date 2019/10/11 9:53
  * @Version
  */
-public class HelloWroldSwing {
+public class HelloWorldSwing {
 
     public static void createShowGUI(){
         JFrame.setDefaultLookAndFeelDecorated(true);
@@ -29,7 +29,7 @@ public class HelloWroldSwing {
 
     public static void main(String[] args) {
         // 显示应用 GUI
-        invokeLater(() -> createShowGUI());
+        invokeLater(HelloWorldSwing::createShowGUI);
     }
 
 }

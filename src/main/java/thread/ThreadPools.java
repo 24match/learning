@@ -3,14 +3,12 @@ package thread;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Author
- * @Date 2019/10/8 16:34
- * @Version
+ * @author
+ * @date  2019/10/8 16:34
  */
 public class ThreadPools {
     /**
@@ -39,7 +37,7 @@ public class ThreadPools {
                 workQueue,
                 new ThreadFactoryBuilder().setNameFormat("XX-task-%d").build());
         //提交一个任务
-//        executor.execute(() -> System.out.println("ok"));
+        executor.execute(() -> System.out.println("ok"));
     }
 
 }

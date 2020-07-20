@@ -20,31 +20,27 @@ public class CountDownLatchTest {
 
         //第一个线程执行
         ExecutorService es1 = Executors.newSingleThreadExecutor();
-        es1.execute(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(3000);
-                    System.out.println("子线程:"+Thread.currentThread().getName()+"执行");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                latch.countDown();
+        es1.execute(() -> {
+            try {
+                Thread.sleep(3000);
+                System.out.println("子线程:"+Thread.currentThread().getName()+"执行");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            latch.countDown();
         });
         es1.shutdown();
 
         //第二个线程执行
         ExecutorService es2 = Executors.newSingleThreadExecutor();
-        es2.execute(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(3000);
-                    System.out.println("子线程:+"+Thread.currentThread().getName()+"执行");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                latch.countDown();
+        es2.execute(() -> {
+            try {
+                Thread.sleep(3000);
+                System.out.println("子线程:+"+Thread.currentThread().getName()+"执行");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            latch.countDown();
         });
         es2.shutdown();
         System.out.println("等待两个线程执行完毕......");

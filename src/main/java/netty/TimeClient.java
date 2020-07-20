@@ -29,10 +29,10 @@ public class TimeClient {
         }
 
         public void connect(String host, int port) {
-            /**配置客户端 NIO 线程组/池*/
+            /*配置客户端 NIO 线程组/池*/
             EventLoopGroup group = new NioEventLoopGroup();
             try {
-                /**
+                /*
                  * Bootstrap 与 ServerBootstrap 都继承(extends)于 AbstractBootstrap
                  * 创建客户端辅助启动类,并对其配置,与服务器稍微不同，这里的 Channel 设置为 NioSocketChannel
                  * 然后为其添加 Handler，这里直接使用匿名内部类，实现 initChannel 方法
@@ -43,21 +43,21 @@ public class TimeClient {
                         .option(ChannelOption.TCP_NODELAY, true)
                         .handler(new ChannelInitializer<SocketChannel>() {
                             @Override
-                            public void initChannel(SocketChannel ch) throws Exception {
+                            public void initChannel(SocketChannel ch) {
                                 ch.pipeline().addLast(new TimeClientHandler());
                             }
                         });
 
-                /**connect：发起异步连接操作，调用同步方法 sync 等待连接成功*/
+                /*connect：发起异步连接操作，调用同步方法 sync 等待连接成功*/
                 ChannelFuture channelFuture = b.connect(host, port).sync();
                 System.out.println(Thread.currentThread().getName() + ",客户端发起异步连接..........");
 
-                /**等待客户端链路关闭*/
+                /*等待客户端链路关闭*/
                 channelFuture.channel().closeFuture().sync();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                /**释放NIO线程组*/
+                /*释放NIO线程组*/
                 group.shutdownGracefully();
             }
         }

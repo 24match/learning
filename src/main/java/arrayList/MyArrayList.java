@@ -9,9 +9,8 @@ import java.util.function.UnaryOperator;
 /**
  * learning ArrayList
  * 参考博客 : https://www.cnblogs.com/hzmark/archive/2012/12/20/ArrayList.html
- * @Author Liang
- * @Date 2019/10/14 11:48
- * @Version
+ * @author  Liang
+ * @date  2019/10/14 11:48
  */
 public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAccess,Cloneable , Serializable {
     private static final long serialVersionUID = -9189397985924370353L;
@@ -584,15 +583,6 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
         this.size = 0;
     }
 
-
-
-
-
-
-
-
-
-
     /**
      * SbuList 作用是返回一个List集合的其中一部分视图。
      */
@@ -756,7 +746,7 @@ public class MyArrayList<E> extends AbstractList<E> implements List<E>, RandomAc
         @Override
         public void forEachRemaining(Consumer<? super E> var1) {
             if (var1 == null) {
-                throw  new NullPointerException();
+                throw new NullPointerException();
             } else {
                 MyArrayList var5;
                 Object[] var6;

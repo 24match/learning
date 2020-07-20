@@ -15,7 +15,7 @@ public class TestReflaction {
             //2
             Class pClass2 = charactor.Hero.class;
             //3
-            Class pClass3 = new charactor.Hero().getClass();
+            Class pClass3 = Hero.class;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

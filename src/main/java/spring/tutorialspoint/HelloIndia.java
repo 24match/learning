@@ -6,7 +6,7 @@ public class HelloIndia {
     private String message3;
 
     public void getMessage1() {
-        System.out.println("India Message1 : " +message1);
+        System.out.println("India Message1 : " + message1);
     }
 
     public void setMessage1(String message1) {
